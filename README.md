@@ -1,2 +1,1 @@
-# projeto-integrado-python
-# projeto-integrado-python
+# Repositório do Código-Fonte do Sistema Python
