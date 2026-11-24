@@ -13,6 +13,7 @@ def criar_tabelas():
             cliente TEXT NOT NULL,
             forma_pagamento TEXT NOT NULL,
             valor_total REAL NOT NULL,
+            status TEXT NOT NULL,
             tempo_prep INTEGER NOT NULL
         )
     """)
