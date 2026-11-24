@@ -23,8 +23,8 @@ def criar_tabelas():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             veiculo TEXT NOT NULL,
-            telefone REAL NOT NULL,
-            status REAL NOT NULL,
+            telefone TEXT NOT NULL,
+            status TEXT NOT NULL,
             entregas INTEGER DEFAULT 0,
             avaliacao REAL DEFAULT 5.0
         )

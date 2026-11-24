@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import database as db
 
-st.set_page_config(page_title="Mão na Massa", page_icon="🍝", layout="wide")
+st.set_page_config(page_title="Mão na Massa", page_icon="images/logo-da-empresa-icone.png", layout="wide")
 
 db.criar_tabelas()
 
@@ -18,7 +18,7 @@ if menu == "Pedidos":
 
     total_pedidos = len(df_pedidos)
     em_andamento = len(df_pedidos[df_pedidos["STATUS"].isin(["Recebido", "Preparando"])]) if not df_pedidos.empty else 0
-    concluidos = len(df_pedidos[df_pedidos["STATUS"] == "Concluido"]) if not df_pedidos.empty else 0
+    concluidos = len(df_pedidos[df_pedidos["STATUS"] == "Concluído"]) if not df_pedidos.empty else 0
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Total de Pedidos", total_pedidos)
@@ -47,7 +47,7 @@ if menu == "Pedidos":
                 if cliente and valor_total > 0:
                     db.inserir_pedido(cliente, forma_pagamento, valor_total, status, tempo_prep)
                     st.success("Pedido cadastrado com sucesso!")
-                    st.rerurn()
+                    st.rerun()
                 else:
                     st.warning("Preencha o nome do cliente e um valor maior que zero. ")
 
@@ -72,3 +72,6 @@ elif menu == "Entregas":
 elif menu == "Financeiro":
     st.title("Financeiro")
     st.info("Em breve. . . ")
+
+
+# st.logo("images/logo-da-empresa-icone.png")
