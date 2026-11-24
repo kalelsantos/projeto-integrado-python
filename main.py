@@ -38,7 +38,28 @@ if menu == "Pedidos":
             valor_total = c3.number_input("Valor Total R$", min_value=0.0, step=5.0, format="%.2f")
             status = c4.selectbox("Status", ["Recebido", "Preparando", "Concluído"])
 
+            tempo_prep = st.number_input("Tempo de preparação (min)", min_value=5, max_value=180, value=30, step=5)
 
+            _, col_btn = st.columns([4, 1])
+            submitted = col_btn.form_submit_button("Cadastrar Pedido", use_container_width=True)
+
+            if submitted:
+                if cliente and valor_total > 0:
+                    db.inserir_pedido(cliente, forma_pagamento, valor_total, status, tempo_prep)
+                    st.success("Pedido cadastrado com sucesso!")
+                    st.rerurn()
+                else:
+                    st.warning("Preencha o nome do cliente e um valor maior que zero. ")
+
+    st.subheader("PEDIDOS RECENTES")
+    if not df_pedidos.empty:
+        df_exibicao = df_pedidos[["ID", "CLIENTE", "VALOR", "STATUS"]].copy()
+        df_exibicao["ID"] = df_exibicao["ID"].apply(lambda x: f"#{x}")
+        df_exibicao["VALOR"] = df_exibicao["VALOR"].apply(lambda x: f"R$:{x:,.2f}".replace(".", ","))
+
+        st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
+    else:
+        st.info("Nenhum pedido cadastrado ainda.")
 
 elif menu == "Entregadores":
     st.title("Entregadores")
