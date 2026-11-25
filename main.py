@@ -40,7 +40,7 @@ if menu == "Pedidos":
 
             tempo_prep = st.number_input("Tempo de preparação (min)", min_value=5, max_value=180, value=30, step=5)
 
-            _, col_btn = st.columns([4, 1])
+            _, col_btn = st.columns([2, 1])
             submitted = col_btn.form_submit_button("Cadastrar Pedido", use_container_width=True)
 
             if submitted:
@@ -83,16 +83,20 @@ elif menu == "Entregadores":
         with st.form("form_entregadores", clear_on_submit=True):
             col_esq, col_dir = st.columns(2)
             with col_esq:
-                st.text_input("Nome do Motoboy")
-                st.text_input("Telefone")
+                nome_motoboy = st.text_input("Nome do Motoboy")
+                telefone_motoboy = st.text_input("Telefone")
 
             with col_dir:
-                st.selectbox("Tipo de Veículo", ["Carro", "Motocicleta", "Bicicleta"])
-                st.selectbox("Status", ["Disponível", "Em Rota", "Indisponível"])
+                veiculo_motoboy = st.selectbox("Tipo de Veículo", ["Carro", "Motocicleta", "Bicicleta"])
+                status_motoboy = st.selectbox("Status", ["Disponível", "Em Rota", "Indisponível"])
                 
+                submitted = st.form_submit_button("Cadastrar Motoboy", use_container_width=True)
 
-
-
+                if submitted:
+                    if nome_motoboy and telefone_motoboy.strip():
+                        db.inserir_entregador(nome_motoboy, veiculo_motoboy, telefone_motoboy, status_motoboy)
+                    else:
+                        st.warning("Preencha o nome e o telefone do motoboy. ")
 
 
 
