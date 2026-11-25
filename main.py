@@ -59,11 +59,47 @@ if menu == "Pedidos":
 
         st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
     else:
-        st.info("Nenhum pedido cadastrado ainda.")
+        st.info("Nenhum pedido cadastrado até agora.")
 
 elif menu == "Entregadores":
-    st.title("Entregadores")
-    st.info("Próximo passo. . . ")
+    entregadores = db.listar_entregadores()
+    df_entregadores = pd.DataFrame(entregadores, columns=["ID", "NOME", "VEICULO", "TELEFONE", "STATUS", "ENTREGAS", "AVALIACAO"])
+
+    total_cadastrados = len(df_entregadores)
+    disponiveis = len(df_entregadores[df_entregadores["STATUS"] == "Disponível"]) if not df_entregadores.empty else 0
+    indisponiveis = len(df_entregadores[df_entregadores["STATUS"] != "Disponível"]) if not df_entregadores.empty else 0
+    avaliacao_media = df_entregadores["AVALIACAO"].mean() if not df_entregadores.empty else 5.0
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Cadastrados", total_cadastrados)
+    col2.metric("Disponíveis", disponiveis)
+    col3.metric("Indisponíveis", indisponiveis)
+    col4.metric("Avaliação Média", f"{avaliacao_media:.2f}")
+
+    st.markdown("---")
+
+    with st.container(border=True):
+        st.subheader("CADASTRAR NOVO ENTREGADOR")
+        with st.form("form_entregadores", clear_on_submit=True):
+            col_esq, col_dir = st.columns(2)
+            with col_esq:
+                st.text_input("Nome do Motoboy")
+                st.text_input("Telefone")
+
+            with col_dir:
+                st.selectbox("Tipo de Veículo", ["Carro", "Motocicleta", "Bicicleta"])
+                st.selectbox("Status", ["Disponível", "Em Rota", "Indisponível"])
+                
+
+
+
+
+
+
+
+
+
+
 
 elif menu == "Entregas":
     st.title("Entregas")
