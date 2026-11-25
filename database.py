@@ -65,3 +65,22 @@ def listar_pedidos():
     dados = cursor.fetchall()
     conn.close()
     return dados
+
+def inserir_entregador(nome, veiculo, telefone, status):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO entregadores (nome, veiculo, telefone, status)
+        VALUES (?, ?, ?, ?)
+    """, (nome, veiculo, telefone, status))
+
+    conn.commit()
+    conn.close()
+
+def listar_entregadores():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, nome, veiculo, telefone, status, entregas, avaliacao FROM entregadores ORDER BY id DESC")
+    dados = cursor.fetchall()
+    conn.close()
+    return dados
