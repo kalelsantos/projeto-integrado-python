@@ -31,6 +31,18 @@ def criar_tabelas():
     """)
 
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS entregas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pedido_id INTEGER NOT NULL,
+            motoboy TEXT NOT NULL,
+            endereco TEXT NOT NULL,
+            valor_entrega REAL NOT NULL,
+            tempo_estimado INTEGER NOT NULL,
+            status TEXT NOT NULL
+        )
+    """)
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS financeiro (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tipo TEXT NOT NULL,
@@ -81,6 +93,26 @@ def listar_entregadores():
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("SELECT id, nome, veiculo, telefone, status, entregas, avaliacao FROM entregadores ORDER BY id DESC")
+    dados = cursor.fetchall()
+    conn.close()
+    return dados
+
+def inserir_entrega(pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO entregas (pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status)
+        VALUES (?, ?, ?, ?, ?, "Aguardando Retirada")
+
+    """, (pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status))
+
+    cursor.execute("""INSERT INTO financeiro""")
+
+
+def listar_entregas():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status FROM entregas ORDER BY id DESC")
     dados = cursor.fetchall()
     conn.close()
     return dados

@@ -31,8 +31,8 @@ if menu == "Pedidos":
         st.subheader("CADASTRAR NOVO PEDIDO")
         with st.form("form_pedidos", clear_on_submit=True):
             c1, c2 = st.columns(2)
-            cliente = c1.text_input("Nome do cliente")
-            forma_pagamento = c2.selectbox("Forma de pagamento", ["Pix", "Cartão de Crédito", "Cartão de Débito", "Dinherio"])
+            cliente = c1.text_input("Nome do cliente").title()
+            forma_pagamento = c2.selectbox("Forma de pagamento", ["Pix", "Cartão de Crédito", "Cartão de Débito", "Dinheiro"])
 
             c3, c4 = st.columns(2)
             valor_total = c3.number_input("Valor Total R$", min_value=0.0, step=5.0, format="%.2f")
@@ -63,12 +63,12 @@ if menu == "Pedidos":
 
 elif menu == "Entregadores":
     entregadores = db.listar_entregadores()
-    df_entregadores = pd.DataFrame(entregadores, columns=["ID", "NOME", "VEICULO", "TELEFONE", "STATUS", "ENTREGAS", "AVALIACAO"])
+    df_entregadores = pd.DataFrame(entregadores, columns=["ID", "NOME", "VEÍCULO", "TELEFONE", "STATUS", "ENTREGAS", "AVALIAÇÃO"])
 
     total_cadastrados = len(df_entregadores)
     disponiveis = len(df_entregadores[df_entregadores["STATUS"] == "Disponível"]) if not df_entregadores.empty else 0
     indisponiveis = len(df_entregadores[df_entregadores["STATUS"] != "Disponível"]) if not df_entregadores.empty else 0
-    avaliacao_media = df_entregadores["AVALIACAO"].mean() if not df_entregadores.empty else 5.0
+    avaliacao_media = df_entregadores["AVALIAÇÃO"].mean() if not df_entregadores.empty else 5.0
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Cadastrados", total_cadastrados)
@@ -83,7 +83,7 @@ elif menu == "Entregadores":
         with st.form("form_entregadores", clear_on_submit=True):
             col_esq, col_dir = st.columns(2)
             with col_esq:
-                nome_motoboy = st.text_input("Nome do Motoboy")
+                nome_motoboy = st.text_input("Nome do Motoboy").title()
                 telefone_motoboy = st.text_input("Telefone")
 
             with col_dir:
@@ -92,22 +92,64 @@ elif menu == "Entregadores":
                 
                 submitted = st.form_submit_button("Cadastrar Motoboy", use_container_width=True)
 
-                if submitted:
-                    if nome_motoboy and telefone_motoboy.strip():
-                        db.inserir_entregador(nome_motoboy, veiculo_motoboy, telefone_motoboy, status_motoboy)
-                    else:
-                        st.warning("Preencha o nome e o telefone do motoboy. ")
+            if submitted:
+                if nome_motoboy and telefone_motoboy.strip():
+                    db.inserir_entregador(nome_motoboy.strip(), veiculo_motoboy, telefone_motoboy.strip(), status_motoboy)
+                    st.success("Motoboy cadastrado com sucesso!")
+                    st.rerun()
+                else:
+                    st.warning("Preencha o nome e o telefone do motoboy. ")
 
-
-
-
-
-
-
+    st.subheader("MOTOBOYS")
+    if df_entregadores.empty:
+        st.info("Nenhum entregador cadastrado ainda. ")
+    else:
+        df_entregadores["ID"] = "#" + df_entregadores["ID"].astype(str)
+        df_entregadores["ENTREGAS"] = df_entregadores["ENTREGAS"].astype(str)
+        df_entregadores["AVALIAÇÃO"] = df_entregadores["AVALIAÇÃO"].apply(lambda x: f"{x:.2f}")
+        st.dataframe(df_entregadores, use_container_width=True, hide_index=True)
 
 elif menu == "Entregas":
     st.title("Entregas")
     st.info("Em breve. . . ")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 elif menu == "Financeiro":
     st.title("Financeiro")
