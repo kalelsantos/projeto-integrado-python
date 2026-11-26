@@ -110,11 +110,35 @@ elif menu == "Entregadores":
         st.dataframe(df_entregadores, use_container_width=True, hide_index=True)
 
 elif menu == "Entregas":
-    st.title("Entregas")
-    st.info("Em breve. . . ")
+    entregas = db.listar_entregas()
+    df_entregas = pd.DataFrame(entregas, columns=["ID", "PEDIDO", "MOTOBOY", "LOCALIZAÇÃO", "VALOR", "TEMPO ESTIMADO", "STATUS"])
 
+    entregas_concluidas = len(df_entregas[df_entregas["STATUS"] == "Entregue"]) if not df_entregas.empty else 0
 
+    tempo_medio = df_entregas["TEMPO ESTIMADO"].mean() if not df_entregas.empty else 0
 
+    _, col1, _, col2, _ = st.columns([1.5, 2, 0.5, 2, 1])
+    col1.metric("Entregas Concluídas", entregas_concluidas)
+    col2.metric("Tempo Médio", f"{tempo_medio:.0f}")
+
+    st.markdown("---")
+
+    with st.container(border=True):
+        st.subheader ("Distribuir Entrega")
+        with st.form("form_entregas", clear_on_submit=True):
+            col_esq, col_dir = st.columns(2)
+            with col_esq:
+                num_pedido = st.text_input("Número do Pedido")
+                valor_entrega = st.number_input("Valor de Entrega R$")
+            with col_dir:
+                endereco = st.text_input("Endereço de Entrega")
+                entregador_resp = st.text_input("Entregador Responsável")
+            
+                submitted = st.form_submit_button("Distribuir Entrega", use_container_width=True)
+
+        if submitted:
+            if num_pedido and endereco and entregador_resp > 0:
+                db.inserir_entrega()
 
 
 
@@ -154,6 +178,7 @@ elif menu == "Entregas":
 elif menu == "Financeiro":
     st.title("Financeiro")
     st.info("Em breve. . . ")
+    st.error("Não esquecer que para acessar esta tela será necessário usar uma senha")
 
 
 # st.logo("images/logo-da-empresa-icone.png")

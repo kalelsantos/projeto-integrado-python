@@ -97,18 +97,26 @@ def listar_entregadores():
     conn.close()
     return dados
 
-def inserir_entrega(pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status):
+def inserir_entrega(pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status="Aguardando Retirada"):
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO entregas (pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status)
-        VALUES (?, ?, ?, ?, ?, "Aguardando Retirada")
+        VALUES (?, ?, ?, ?, ?, ?)
 
     """, (pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status))
 
     cursor.execute("""
         INSERT INTO financeiro (tipo, valor, descricao)
-        VALUES ('Taxa de Entrega', ?, ?)""")
+        VALUES ('Taxa de Entrega', ?, ?)
+        """, (valor_entrega, f"Entrega do Pedido #{pedido_id}"))
+    
+    cursor.execute("""
+        UPDATE entregadores SET status = 'Em Rota' WHERE nome = ?
+        """, (motoboy,))
+
+    conn.commit()
+    conn.close()
 
 
 def listar_entregas():
