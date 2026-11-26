@@ -106,7 +106,9 @@ def inserir_entrega(pedido_id, motoboy, endereco, valor_entrega, tempo_estimado,
 
     """, (pedido_id, motoboy, endereco, valor_entrega, tempo_estimado, status))
 
-    cursor.execute("""INSERT INTO financeiro""")
+    cursor.execute("""
+        INSERT INTO financeiro (tipo, valor, descricao)
+        VALUES ('Taxa de Entrega', ?, ?)""")
 
 
 def listar_entregas():
