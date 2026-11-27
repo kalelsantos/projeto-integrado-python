@@ -114,6 +114,10 @@ def inserir_entrega(pedido_id, motoboy, endereco, valor_entrega, tempo_estimado,
     cursor.execute("""
         UPDATE entregadores SET status = 'Em Rota' WHERE nome = ?
         """, (motoboy,))
+    
+    cursor.execute("""
+        UPDATE pedidos SET status = 'Concluído' WHERE id = ?
+    """, (pedido_id,))
 
     conn.commit()
     conn.close()

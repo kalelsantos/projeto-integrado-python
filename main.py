@@ -111,7 +111,7 @@ elif menu == "Entregadores":
 
 elif menu == "Entregas":
     entregas = db.listar_entregas()
-    df_entregas = pd.DataFrame(entregas, columns=["ID", "PEDIDO", "MOTOBOY", "LOCALIZAÇÃO", "VALOR", "TEMPO ESTIMADO", "STATUS"])
+    df_entregas = pd.DataFrame(entregas, columns=["ID", "PEDIDO", "MOTOBOY", "LOCALIZAÇÃO", "VALOR ENTREGA", "TEMPO ESTIMADO", "STATUS"])
 
     entregas_concluidas = len(df_entregas[df_entregas["STATUS"] == "Entregue"]) if not df_entregas.empty else 0
 
@@ -123,28 +123,43 @@ elif menu == "Entregas":
 
     st.markdown("---")
 
+    lista_pedidos = [p[0] for p in db.listar_pedidos() if p[3] != "Concluído"]
+    lista_motoboys = [e[1] for e in db.listar_entregadores() if e[4] == "Disponível"]
+
+
     with st.container(border=True):
         st.subheader ("Distribuir Entrega")
         with st.form("form_entregas", clear_on_submit=True):
             col_esq, col_dir = st.columns(2)
             with col_esq:
-                num_pedido = st.text_input("Número do Pedido")
-                valor_entrega = st.number_input("Valor de Entrega R$")
+                num_pedido = st.selectbox("Número do Pedido", lista_pedidos)
+                valor_entrega = st.number_input("Valor de Entrega R$", min_value=0.0, step=1.0, format="%.2f")
+                tempo_estimado = st.number_input("Tempo Estimado de Entrega (min)", min_value=5, max_value=180, value=20, step=5)
             with col_dir:
                 endereco = st.text_input("Endereço de Entrega")
-                entregador_resp = st.text_input("Entregador Responsável")
-            
+                entregador_resp = st.selectbox("Entregador Responsável", lista_motoboys)
+                st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
                 submitted = st.form_submit_button("Distribuir Entrega", use_container_width=True)
 
         if submitted:
-            if num_pedido and endereco and entregador_resp > 0:
-                db.inserir_entrega()
+            if entregador_resp.strip() and endereco.strip() and num_pedido:
+                db.inserir_entrega(num_pedido, entregador_resp, endereco.strip(), valor_entrega, tempo_estimado)
+                st.success("Entrega registrada com sucesso!")
+                st.rerun()
+            else:
+                st.warning("Preencha o endereço de entrega.")
 
+    st.subheader("ACOMPANHAMENTO")
+    if df_entregas.empty:
+        st.info("Nenhuma entrega para acompanhar. ")
+    else:
+        df_exibicao = df_entregas.copy()
+        df_exibicao["ID"] = df_exibicao["ID"].apply(lambda x: f"#{x}")
+        df_exibicao["PEDIDO"] = df_exibicao["PEDIDO"].apply(lambda x: f"#{x}")
+        df_exibicao["VALOR ENTREGA"] = df_exibicao["VALOR ENTREGA"].apply(lambda x: f"R$ {x:,.2f}".replace(".", ","))
+        df_exibicao["TEMPO ESTIMADO"] = df_exibicao["TEMPO ESTIMADO"].apply(lambda x: f"{x} min")
 
-
-
-
-
+        st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
 
 
 
