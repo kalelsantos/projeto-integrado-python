@@ -39,7 +39,7 @@ if menu == "Pedidos":
             status = c4.selectbox("Status", ["Recebido", "Preparando", "Concluído"])
 
             tempo_prep = st.number_input("Tempo de preparação (min)", min_value=5, max_value=180, value=30, step=5)
-
+            st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
             _, col_btn = st.columns([2, 1])
             submitted = col_btn.form_submit_button("Cadastrar Pedido", use_container_width=True)
 
@@ -60,6 +60,7 @@ if menu == "Pedidos":
         st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
     else:
         st.info("Nenhum pedido cadastrado até agora.")
+
 
 elif menu == "Entregadores":
     entregadores = db.listar_entregadores()
@@ -89,7 +90,7 @@ elif menu == "Entregadores":
             with col_dir:
                 veiculo_motoboy = st.selectbox("Tipo de Veículo", ["Carro", "Motocicleta", "Bicicleta"])
                 status_motoboy = st.selectbox("Status", ["Disponível", "Em Rota", "Indisponível"])
-                
+                st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True) 
                 submitted = st.form_submit_button("Cadastrar Motoboy", use_container_width=True)
 
             if submitted:
@@ -108,6 +109,7 @@ elif menu == "Entregadores":
         df_entregadores["ENTREGAS"] = df_entregadores["ENTREGAS"].astype(str)
         df_entregadores["AVALIAÇÃO"] = df_entregadores["AVALIAÇÃO"].apply(lambda x: f"{x:.2f}")
         st.dataframe(df_entregadores, use_container_width=True, hide_index=True)
+
 
 elif menu == "Entregas":
     entregas = db.listar_entregas()
@@ -162,38 +164,46 @@ elif menu == "Entregas":
         st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 elif menu == "Financeiro":
-    st.title("Financeiro")
-    st.info("Em breve. . . ")
-    st.error("Não esquecer que para acessar esta tela será necessário usar uma senha")
+    if "financeiro_liberado" not in st.session_state:
+        st.session_state["financeiro_liberado"] = False
+    if st.session_state["financeiro_liberado"] == False:
+        with st.container(border=True):
+            st.subheader("Acessar a aba financeiro")
+            with st.form("form_senha", clear_on_submit=True):
+                senha = st.text_input("Digite a senha para acessar a aba financeiro", type="password")
+
+                submitted = st.form_submit_button("Entrar", use_container_width=True)
+
+            if submitted:
+                if senha == "123":
+                    st.session_state["financeiro_liberado"] = True
+                    st.session_state["mostrar_aviso"] = True
+                    st.rerun()
+                else:
+                    st.error("Senha incorreta, tente novamente. ")
+    else:
+        st.title("FINANCEIRO")
+        if st.session_state.get("mostrar_aviso"):
+            st.toast("Acesso liberado com sucesso!")
+            st.session_state["mostrar_aviso"] = False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # st.logo("images/logo-da-empresa-icone.png")
